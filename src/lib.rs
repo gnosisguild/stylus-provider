@@ -21,6 +21,10 @@ use stylus_sdk::prelude::*;
 /// Result of the FHE computation
 ///
 /// Contains cryptographic proofs and results of the computation.
+/// The tuple contains:
+/// * The result of the computation
+/// * The hash of the parameters
+/// * The root of the Merkle tree
 type ComputeResult = (Vec<u8>, Vec<u8>, Vec<u8>);
 
 // Define persistent storage using the Solidity ABI
