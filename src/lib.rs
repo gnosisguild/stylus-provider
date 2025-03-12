@@ -1,32 +1,72 @@
-// Allow `cargo stylus export-abi` to generate a main function.
+//! FHE Compute Contract for Arbitrum Stylus
+//!
+//! This library implements a Fully Homomorphic Encryption (FHE) computation service
+//! on Arbitrum Stylus. It provides functionality for processing encrypted data
+//! without revealing the underlying plaintext.
+
 #![cfg_attr(not(any(test, feature = "export-abi")), no_main)]
 extern crate alloc;
 
-mod processor;
+mod merkle;
+pub mod processor;
 
-/// Import items from the SDK. The prelude contains common traits and macros.
-use stylus_sdk::prelude::*;
+pub use processor::FHEInputs;
+
+use alloc::vec::Vec;
 use bincode;
-use serde::{Serialize, Deserialize};
+use merkle::MerkleTree;
+use sha3::{Digest, Keccak256};
+use stylus_sdk::prelude::*;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct FHEInputs {
-    pub ciphertexts: Vec<(Vec<u8>, u64)>,
-    pub params: Vec<u8>,
-}
+/// Result of the FHE computation
+///
+/// Contains cryptographic proofs and results of the computation.
+type ComputeResult = (Vec<u8>, Vec<u8>, Vec<u8>);
 
-// Define some persistent storage using the Solidity ABI.
-// `StylusProvider` will be the entrypoint.
+// Define persistent storage using the Solidity ABI
 sol_storage! {
     #[entrypoint]
-    pub struct StylusProvider{}
+    pub struct StylusProvider {}
 }
 
-/// Declare that `StylusProvider` is a contract with the following external methods.
+/// Implementation of the StylusProvider contract
 #[public]
 impl StylusProvider {
-    pub fn run_compute(&self, input: Vec<u8>) -> Vec<u8> {
-        let deserialized: FHEInputs = bincode::deserialize(&input).unwrap();
-        processor::fhe_processor(&deserialized)
+    /// Executes FHE computation on encrypted data
+    ///
+    /// # Arguments
+    ///
+    /// * `input` - Serialized FHEInputs structure
+    ///
+    /// # Returns
+    ///
+    /// A tuple containing:
+    /// * The computation result
+    /// * Hash of the parameters
+    /// * Merkle root for verification
+    pub fn run_compute(&self, input: Vec<u8>) -> ComputeResult {
+        // Deserialize the input
+        let deserialized: FHEInputs = bincode::deserialize(&input)
+            .expect("Failed to deserialize input");
+        
+        // Build Merkle tree for verification
+        let mut tree = MerkleTree::new();
+        tree.compute_leaf_hashes(&deserialized.ciphertexts);
+        let root = tree.build_tree().root()
+            .expect("Failed to compute Merkle root");
+        
+        // Compute parameter hash
+        let params_hash = Keccak256::digest(&deserialized.params).to_vec();
+        
+        // Process the FHE computation
+        let result = processor::fhe_processor(&deserialized);
+        
+        (result, params_hash, hex::decode(root).expect("Failed to decode root hex"))
     }
+}
+
+/// Exports the ABI for the contract
+#[cfg(feature = "export-abi")]
+pub fn export_abi(license: &str, solidity_version: &str) {
+    stylus_sdk::export_abi(license, solidity_version);
 }
