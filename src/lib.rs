@@ -59,10 +59,9 @@ impl StylusProvider {
         let params_hash = Keccak256::digest(&deserialized.params).to_vec();
         
         // Process the FHE computation
-        // let result = processor::fhe_processor(&deserialized);
+        let result = processor::fhe_processor(&deserialized);
         
-        // (result, params_hash, hex::decode(root).expect("Failed to decode root hex"))
-        (vec![], params_hash, hex::decode(root).expect("Failed to decode root hex"))
+        (result, params_hash, hex::decode(root).expect("Failed to decode root hex"))
     }
 }
 
