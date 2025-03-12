@@ -2,6 +2,28 @@
 
 This repository contains the implementation of a Stylus-based Compute Provider for encrypted execution environments, designed to securely process votes using Fully Homomorphic Encryption (FHE) directly on-chain. This compute provider leverages Arbitrum Stylus to perform on-chain computations efficiently while ensuring data privacy and integrity.
 
+
+## Stylus Check
+Check ensures the contract can be compiled and deployed to Stylus.
+
+```bash
+cargo stylus check  --verbose
+```
+
+To use a different endpoint
+
+```bash
+cargo stylus check  --verbose --endpoint='http://127.0.0.1:8449'
+```
+
+## Stylus Deploy
+
+```bash
+cargo stylus deploy --no-verify --verbose \   
+  --endpoint='http://127.0.0.1:8449' \
+  --private-key="<PRIVATE_KEY>"
+```
+
 ## Running Tests
 
 Run the unit and integration tests to verify the FHE computation functionality:
