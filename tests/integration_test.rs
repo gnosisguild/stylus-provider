@@ -54,7 +54,6 @@ fn decrypt_result(result_bytes: &[u8], params: &Arc<BfvParameters>, sk: &SecretK
 
 #[test]
 fn test_fhe_addition() {
-    // Test values
     let values = vec![5, 10, 15];
     let expected_sum = values.iter().sum::<u64>();
     
@@ -71,7 +70,6 @@ fn test_fhe_addition() {
 
 #[test]
 fn test_fhe_zero_values() {
-    // Test with all zeros
     let values = vec![0, 0, 0];
     let expected_sum = 0;
     
@@ -88,7 +86,6 @@ fn test_fhe_zero_values() {
 
 #[test]
 fn test_fhe_single_value() {
-    // Test with a single value
     let values = vec![42];
     let expected_sum = 42;
     

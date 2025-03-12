@@ -12,8 +12,20 @@ use sha3::{Digest, Keccak256};
 
 /// Merkle tree implementation for FHE computation verification
 ///
-/// This structure manages the creation and verification of a Merkle tree
+/// This structure manages the creation of a Merkle tree
 /// for cryptographic proofs of computation integrity.
+/// 
+/// ## Usage:
+/// ```rust
+/// let data = vec![
+///     (b"ciphertext_1".to_vec(), 0),
+///     (b"ciphertext_2".to_vec(), 1),
+///     (b"ciphertext_3".to_vec(), 2),
+/// ];
+/// let mut tree = MerkleTree::new();
+/// tree.compute_leaf_hashes(&data);
+/// let root = tree.build_tree().root().expect("Failed to compute Merkle root");
+/// ```
 pub struct MerkleTree {
     /// Hashes of the leaf nodes in the Merkle tree
     pub leaf_hashes: Vec<String>,
@@ -104,26 +116,21 @@ impl MerkleTree {
 mod tests {
     use super::*;
 
-    /// Tests the Merkle tree construction and root calculation
     #[test]
     fn test_merkle_tree() {
-        // Sample test data
         let data = vec![
             (b"ciphertext_1".to_vec(), 0),
             (b"ciphertext_2".to_vec(), 1),
             (b"ciphertext_3".to_vec(), 2),
         ];
 
-        // Create and populate the Merkle tree
         let mut tree_handler = MerkleTree::new();
         tree_handler.compute_leaf_hashes(&data);
         let tree = tree_handler.build_tree();
 
-        // Verify that a root was computed
         let root = tree.root().expect("Failed to compute Merkle root");
         println!("Root: 0x{}", root);
         
-        // The test passes if execution reaches this point without panicking
         assert!(!root.is_empty(), "Root should not be empty");
     }
 }
