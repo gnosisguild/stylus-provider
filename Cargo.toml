@@ -9,7 +9,7 @@ keywords = ["arbitrum", "ethereum", "stylus", "alloy"]
 description = "Compute provider for Stylus"
 
 [dependencies]
-alloy-primitives = { version = "=0.8.20", default-features = false }
+alloy-primitives = { version = "=0.8.20", default-features = false, features = ["tiny-keccak"] }
 alloy-sol-types = { version = "=0.8.20", default-features = false }
 alloy-sol-macro = { version = "=0.8.20", default-features = false }
 bincode = { version = "1.3.3", default-features = false }
@@ -23,14 +23,14 @@ lean-imt = { version = "0.1.1", default-features = false }
 num-bigint = { version = "0.4.0", default-features = false }
 num-traits = { version = "0.2.19", default-features = false }
 sha3 = { version = "0.10.0", default-features = false }
-fhe = { git = "https://github.com/gnosisguild/fhe.rs", version = "0.1.0-beta.7", default-features = false}
-fhe-traits = { git = "https://github.com/gnosisguild/fhe.rs", version = "0.1.0-beta.7", default-features = false}
+fhe = { path = "../../fhe.rs/crates/fhe", version = "0.1.0-beta.7", default-features = false}
+fhe-traits = { path = "../../fhe.rs/crates/fhe-traits", version = "0.1.0-beta.7", default-features = false}
 openzeppelin-crypto = { git = "https://github.com/OpenZeppelin/rust-contracts-stylus", default-features = false }
 
 [dev-dependencies]
 tokio = { version = "1.12.0", features = ["full"] }
+alloy = { version = "0.8.2", features = ["full"]}
 rand = "0.8"
-ethers = "2.0"
 eyre = "0.6.8"
 
 [features]

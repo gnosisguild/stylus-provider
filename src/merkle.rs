@@ -4,6 +4,7 @@
 //! of FHE computation results. It uses Poseidon2 hash functions for efficient
 //! zero-knowledge proof compatibility.
 
+use alloy_primitives::Bytes;
 use lean_imt::LeanIMT;
 use openzeppelin_crypto::arithmetic::uint::{from_str_hex, from_str_radix};
 use openzeppelin_crypto::field::instance::FpBN256;
@@ -47,7 +48,7 @@ impl MerkleTree {
     /// # Arguments
     ///
     /// * `data` - Vector of (ciphertext, index) pairs
-    pub fn compute_leaf_hashes(&mut self, data: &[(Vec<u8>, u64)]) {
+    pub fn compute_leaf_hashes(&mut self, data: &[(Bytes, u64)]) {
         for (ciphertext, idx) in data {
             // 1) Compute Keccak256 hash of the ciphertext
             let keccak_hex = hex::encode(Keccak256::digest(ciphertext));
@@ -119,9 +120,9 @@ mod tests {
     #[test]
     fn test_merkle_tree() {
         let data = vec![
-            (b"ciphertext_1".to_vec(), 0),
-            (b"ciphertext_2".to_vec(), 1),
-            (b"ciphertext_3".to_vec(), 2),
+            (Bytes::from_static(b"ciphertext_1"), 0),
+            (Bytes::from_static(b"ciphertext_2"), 1),
+            (Bytes::from_static(b"ciphertext_3"), 2),
         ];
 
         let mut tree_handler = MerkleTree::new();

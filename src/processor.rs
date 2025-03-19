@@ -7,19 +7,13 @@ use alloc::sync::Arc;
 use alloc::vec::Vec;
 use fhe::bfv::{BfvParameters, Ciphertext};
 use fhe_traits::{Deserialize, DeserializeParametrized, Serialize};
-use serde::{Deserialize as SerdeDeserialize, Serialize as SerdeSerialize};
+use alloy_primitives::Bytes;
 
 /// Input structure for FHE computation
 ///
-/// Contains the encrypted data (ciphertexts) and parameters needed
+/// Contains the encrypted data (ciphertexts index) and parameters needed
 /// for FHE operations.
-#[derive(Clone, Debug, SerdeSerialize, SerdeDeserialize)]
-pub struct FHEInputs {
-    /// Vector of ciphertexts with their associated indices
-    pub ciphertexts: Vec<(Vec<u8>, u64)>,
-    /// FHE parameters required for computation
-    pub params: Vec<u8>,
-}
+pub type FHEInputs = (Vec<(Bytes, u64)>, Bytes);
 
 /// Processes FHE ciphertexts according to the CRISP protocol
 ///
@@ -34,9 +28,9 @@ pub struct FHEInputs {
 ///
 /// A vector of bytes representing the encrypted result
 pub fn fhe_processor(fhe_inputs: &FHEInputs) -> Vec<u8> {
-    // Deserialize the BFV parameters
+
     let params = Arc::new(
-        BfvParameters::try_deserialize(&fhe_inputs.params)
+        BfvParameters::try_deserialize(&fhe_inputs.1)
             .expect("Failed to deserialize BFV parameters")
     );
 
@@ -44,7 +38,7 @@ pub fn fhe_processor(fhe_inputs: &FHEInputs) -> Vec<u8> {
     let mut sum = Ciphertext::zero(&params);
     
     // Sum all ciphertexts
-    for (ciphertext_bytes, _) in &fhe_inputs.ciphertexts {
+    for (ciphertext_bytes, _) in &fhe_inputs.0 {
         let ciphertext = Ciphertext::from_bytes(ciphertext_bytes, &params)
             .expect("Failed to deserialize ciphertext");
         sum += &ciphertext;
@@ -82,22 +76,19 @@ mod tests {
         let expected_sum = inputs.iter().sum::<u64>();
         
         // Encrypt inputs
-        let ciphertexts: Vec<(Vec<u8>, u64)> = inputs
+        let ciphertexts: Vec<(Bytes, u64)> = inputs
             .iter()
             .enumerate()
             .map(|(idx, &val)| {
                 let pt = Plaintext::try_encode(&[val], Encoding::poly(), &params)
                     .expect("Failed to encode plaintext");
                 let ct = pk.try_encrypt(&pt, &mut rng).expect("Failed to encrypt");
-                (ct.to_bytes(), idx as u64)
+                (Bytes::from(ct.to_bytes()), idx as u64)
             })
             .collect();
         
         // Create FHEInputs
-        let fhe_inputs = FHEInputs {
-            ciphertexts,
-            params: params.to_bytes(),
-        };
+        let fhe_inputs = (ciphertexts, Bytes::from(params.to_bytes()));
         
         // Process the inputs
         let result_bytes = fhe_processor(&fhe_inputs);

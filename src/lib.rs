@@ -9,23 +9,13 @@ extern crate alloc;
 
 mod merkle;
 pub mod processor;
-
+use alloy_sol_types::SolValue;
 pub use processor::FHEInputs;
 
 use alloc::vec::Vec;
-use bincode;
 use merkle::MerkleTree;
 use sha3::{Digest, Keccak256};
 use stylus_sdk::prelude::*;
-
-/// Result of the FHE computation
-///
-/// Contains cryptographic proofs and results of the computation.
-/// The tuple contains:
-/// * The result of the computation
-/// * The hash of the parameters
-/// * The root of the Merkle tree
-type ComputeResult = (Vec<u8>, Vec<u8>, Vec<u8>);
 
 // Define persistent storage using the Solidity ABI
 sol_storage! {
@@ -44,28 +34,34 @@ impl StylusProvider {
     ///
     /// # Returns
     ///
-    /// A tuple containing:
+    /// An array of bytes containing:
     /// * The computation result
     /// * Hash of the parameters
     /// * Merkle root for verification
-    pub fn run_compute(&self, input: Vec<u8>) -> ComputeResult {
+    pub fn run_compute(input: Vec<u8>) -> Vec<u8> {
         // Deserialize the input
-        let deserialized: FHEInputs = bincode::deserialize(&input)
-            .expect("Failed to deserialize input");
-        
+        let deserialized  = FHEInputs::abi_decode(&input, true).unwrap();
+
         // Build Merkle tree for verification
         let mut tree = MerkleTree::new();
-        tree.compute_leaf_hashes(&deserialized.ciphertexts);
-        let root = tree.build_tree().root()
+        tree.compute_leaf_hashes(&deserialized.0);
+        let root = tree
+            .build_tree()
+            .root()
             .expect("Failed to compute Merkle root");
-        
+
         // Compute parameter hash
-        let params_hash = Keccak256::digest(&deserialized.params).to_vec();
-        
+        let params_hash = Keccak256::digest(&deserialized.1).to_vec();
+
         // Process the FHE computation
         let result = processor::fhe_processor(&deserialized);
-        
-        (result, params_hash, hex::decode(root).expect("Failed to decode root hex"))
+
+        (
+            result,
+            params_hash,
+            hex::decode(root).expect("Failed to decode root hex"),
+        )
+            .abi_encode()
     }
 }
 
