@@ -17,11 +17,10 @@ use merkle::MerkleTree;
 use sha3::{Digest, Keccak256};
 use stylus_sdk::prelude::*;
 
-// Define persistent storage using the Solidity ABI
-sol_storage! {
-    #[entrypoint]
-    pub struct StylusProvider {}
-}
+// Define Contract
+#[storage]
+#[entrypoint]
+pub struct StylusProvider;
 
 /// Implementation of the StylusProvider contract
 #[public]
@@ -38,9 +37,9 @@ impl StylusProvider {
     /// * The computation result
     /// * Hash of the parameters
     /// * Merkle root for verification
-    pub fn run_compute(input: Vec<u8>) -> Vec<u8> {
+    pub fn run_compute(&self, input: Vec<u8>) -> Vec<u8> {
         // Deserialize the input
-        let deserialized  = FHEInputs::abi_decode(&input, true).unwrap();
+        let deserialized = FHEInputs::abi_decode(&input, true).unwrap();
 
         // Build Merkle tree for verification
         let mut tree = MerkleTree::new();
@@ -55,7 +54,6 @@ impl StylusProvider {
 
         // Process the FHE computation
         let result = processor::fhe_processor(&deserialized);
-
         (
             result,
             params_hash,
@@ -64,6 +62,7 @@ impl StylusProvider {
             .abi_encode()
     }
 }
+
 
 /// Exports the ABI for the contract
 #[cfg(feature = "export-abi")]

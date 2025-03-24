@@ -17,7 +17,7 @@ use sha3::{Digest, Keccak256};
 /// for cryptographic proofs of computation integrity.
 /// 
 /// ## Usage:
-/// ```rust
+/// 
 /// let data = vec![
 ///     (b"ciphertext_1".to_vec(), 0),
 ///     (b"ciphertext_2".to_vec(), 1),
@@ -26,7 +26,7 @@ use sha3::{Digest, Keccak256};
 /// let mut tree = MerkleTree::new();
 /// tree.compute_leaf_hashes(&data);
 /// let root = tree.build_tree().root().expect("Failed to compute Merkle root");
-/// ```
+/// 
 pub struct MerkleTree {
     /// Hashes of the leaf nodes in the Merkle tree
     pub leaf_hashes: Vec<String>,

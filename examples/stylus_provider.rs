@@ -2,7 +2,7 @@ use alloy::{
     network::EthereumWallet, providers::ProviderBuilder, signers::local::PrivateKeySigner, sol,
 };
 use alloy_primitives::Bytes;
-use alloy_sol_types::{SolType, SolValue};
+use alloy_sol_types::SolValue;
 use dotenv::dotenv;
 use eyre::eyre;
 use std::sync::Arc;
