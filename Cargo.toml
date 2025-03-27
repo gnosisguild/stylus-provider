@@ -23,8 +23,8 @@ lean-imt = { version = "0.1.1", default-features = false }
 num-bigint = { version = "0.4.0", default-features = false }
 num-traits = { version = "0.2.19", default-features = false }
 sha3 = { version = "0.10.0", default-features = false }
-fhe = { path = "../../fhe.rs/crates/fhe", version = "0.1.0-beta.7", default-features = false}
-fhe-traits = { path = "../../fhe.rs/crates/fhe-traits", version = "0.1.0-beta.7", default-features = false}
+fhe = { git = "https://github.com/gnosisguild/fhe.rs", branch="floatOp-replacement", version = "0.1.0-beta.7", default-features = false}
+fhe-traits = { git = "https://github.com/gnosisguild/fhe.rs", branch="floatOp-replacement", version = "0.1.0-beta.7", default-features = false}
 openzeppelin-crypto = { git = "https://github.com/OpenZeppelin/rust-contracts-stylus", default-features = false }
 
 [dev-dependencies]
