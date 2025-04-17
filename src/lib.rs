@@ -61,6 +61,18 @@ impl StylusProvider {
         )
             .abi_encode()
     }
+
+
+    pub fn get_merkle_root(&self, input: Vec<u8>) -> Vec<u8> {
+        let deserialized = FHEInputs::abi_decode(&input, true).unwrap();
+        let mut tree = MerkleTree::new();
+        tree.compute_leaf_hashes(&deserialized.0);
+        let root = tree
+            .build_tree()
+            .root()
+            .expect("Failed to compute Merkle root");
+        hex::decode(root).expect("Failed to decode root hex")
+    }
 }
 
 
