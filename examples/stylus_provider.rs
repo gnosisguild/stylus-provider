@@ -11,6 +11,7 @@ use fhe::bfv::{
 };
 use fhe_traits::{Deserialize, DeserializeParametrized, FheEncoder, FheDecoder, FheEncrypter, FheDecrypter, Serialize};
 use rand::thread_rng;
+use std::time::Instant;
 
 fn generate_inputs() -> ((Vec<(Bytes, u64)>, Bytes), SecretKey) {
     let params = create_params();
@@ -115,15 +116,19 @@ async fn main() -> eyre::Result<()> {
     type FHEInputs = (Vec<(Bytes, u64)>, Bytes);
     let encoded_input = FHEInputs::abi_encode(&fhe_inputs);
     println!("Sending computation request to contract...");
+    // Starting Timer
+    let start = Instant::now();
     let result= contract
         .runCompute(encoded_input)
         .call()
-        .await?._0;
-    
+        .await.map_err(|e| eyre!("{}", e));
+    let duration = start.elapsed();
+    println!("Time taken: {:?}", duration);
+    println!("Execution result: {:?}", result);
     println!("Computation completed!");
 
     type FHEResult = (Bytes, Bytes, Bytes);
-    let (result, params_hash, merkle_root) = FHEResult::abi_decode(&result, true).unwrap();
+    let (result, params_hash, merkle_root) = FHEResult::abi_decode(&result.unwrap()._0, true).unwrap();
     println!("Result: {:?}", result);
     println!("Params hash: 0x{}", hex::encode(&params_hash));
     println!("Merkle root: 0x{}", hex::encode(&merkle_root));

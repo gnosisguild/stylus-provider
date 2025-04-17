@@ -1730,6 +1730,7 @@ dependencies = [
 [[package]]
 name = "fhe"
 version = "0.1.0-beta.7"
+source = "git+https://github.com/gnosisguild/fhe.rs?branch=floatOp-replacement#8f45f3eef20ae1c07fa318ed48f5b5c4dbe415c4"
 dependencies = [
  "doc-comment",
  "fhe-math",
@@ -1752,6 +1753,7 @@ dependencies = [
 [[package]]
 name = "fhe-math"
 version = "0.1.0-beta.7"
+source = "git+https://github.com/gnosisguild/fhe.rs?branch=floatOp-replacement#8f45f3eef20ae1c07fa318ed48f5b5c4dbe415c4"
 dependencies = [
  "ethnum",
  "fhe-traits",
@@ -1774,6 +1776,7 @@ dependencies = [
 [[package]]
 name = "fhe-traits"
 version = "0.1.0-beta.7"
+source = "git+https://github.com/gnosisguild/fhe.rs?branch=floatOp-replacement#8f45f3eef20ae1c07fa318ed48f5b5c4dbe415c4"
 dependencies = [
  "rand",
 ]
@@ -1781,6 +1784,7 @@ dependencies = [
 [[package]]
 name = "fhe-util"
 version = "0.1.0-beta.7"
+source = "git+https://github.com/gnosisguild/fhe.rs?branch=floatOp-replacement#8f45f3eef20ae1c07fa318ed48f5b5c4dbe415c4"
 dependencies = [
  "itertools 0.12.1",
  "num-bigint-dig",
@@ -2970,9 +2974,9 @@ dependencies = [
 
 [[package]]
 name = "prettyplease"
-version = "0.2.29"
+version = "0.2.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6924ced06e1f7dfe3fa48d57b9f74f55d8915f5036121bef647ef4b204895fac"
+checksum = "664ec5419c51e34154eec046ebcba56312d5a2fc3b09a06da188e1ad21afadf6"
 dependencies = [
  "proc-macro2",
  "syn 2.0.98",
